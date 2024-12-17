@@ -1,0 +1,14 @@
+name: 2024-stripepy-paper
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - bioframe=0.7
+  - h5py=3.11
+  - hictkpy=0.0.5
+  - matplotlib=3.8
+  - numpy=1.26
+  - pandas=2.2
+  - scikit-learn=1.5
+  - seaborn=0.13
