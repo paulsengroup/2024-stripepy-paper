@@ -1,3 +1,8 @@
+# Copyright (C) 2024 Andrea Raffo <andrea.raffo@ibv.uio.no>
+#
+# SPDX-License-Identifier: MIT
+
+
 import itertools
 import sys
 from typing import Dict, List, Tuple, Union

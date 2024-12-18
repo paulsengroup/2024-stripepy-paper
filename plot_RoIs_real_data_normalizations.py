@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2024 Andrea Raffo <andrea.raffo@ibv.uio.no>
+#
+# SPDX-License-Identifier: MIT
+
+
 import argparse
 import pathlib
 import sys
