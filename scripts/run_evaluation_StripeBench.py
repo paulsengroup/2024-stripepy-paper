@@ -8,11 +8,9 @@
 import argparse
 import itertools
 import pathlib
-import sys
 
 import hictkpy
 import pandas as pd
-
 from utils import IO, evaluate
 
 ## PARAMETERS

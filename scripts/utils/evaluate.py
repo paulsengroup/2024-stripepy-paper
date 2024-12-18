@@ -3,18 +3,12 @@
 # SPDX-License-Identifier: MIT
 
 
-import itertools
-import sys
 from typing import Dict, List, Tuple, Union
 
-import h5py
-import hictkpy
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 from sklearn.metrics import confusion_matrix
-
-from . import IO
 
 
 def average_within_threshold(numbers, threshold):

@@ -7,11 +7,9 @@
 
 import argparse
 import pathlib
-import sys
 
 import numpy as np
 import pandas as pd
-
 from utils import IO
 
 # Resolution
