@@ -1031,6 +1031,11 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
         print(f"StripePy: {np.median(results.loc[results['Method'] == 'stripepy'][m]):.4f}")
         print(f"Chromosight: {np.median(results.loc[results['Method'] == 'chromosight'][m]):.4f}")
         print(f"StripeCaller: {np.median(results.loc[results['Method'] == 'stripecaller'][m]):.4f}")
+        print(f"---Interquantile range for {m} ---")
+        print(f"StripePy: {np.percentile(results.loc[results['Method'] == 'stripepy'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripepy'][m], 25):.4f}")
+        print(f"Chromosight: {np.percentile(results.loc[results['Method'] == 'chromosight'][m], 75) - np.percentile(results.loc[results['Method'] == 'chromosight'][m], 25):.4f}")
+        print(f"StripeCaller: {np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 25):.4f}")
+
 
     # GLOBAL BOXPLOTS
     fig, axes = plt.subplots(3, 4, figsize=(6.5, 4.5))
