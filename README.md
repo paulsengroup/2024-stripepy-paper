@@ -6,7 +6,9 @@ SPDX-License-Identifier: MIT
 
 # Synopsis
 
-This repository contains the source code used for the data analysis for the StripePy manuscript (preprint available soon).
+This repository contains the source code used for: 
+- extracting individual resolutions from the .mcool files contained in the StripeBench benchmark and adding a vector of 1.0s as weights (required for some stripe callers);
+- the data analysis for the StripePy manuscript (preprint available soon).
 
 Input data consists of:
 
@@ -47,10 +49,14 @@ mkdir -p output/StripeBench/{RoIs,boxplots,heatmaps,medians,tables} output/real\
 
 The following scripts can be found inside the `scripts/` folder:
 
+- `preprocess_modle_matrix.py` extracts individual resolutions from the .mcool files contained in the StripeBench benchmark and adds a vector of 1.0s as weights (required for some stripe callers). Example usage: 
+  ```bash
+  scripts/preprocess_modle_matrix.py StripeBench/data/grch38_h1_rad21_*/*.mcool --resolutions 5000 10000 25000 50000
+  ```
 - `run_evaluation_StripeBench.py` generates Figures 3B-Q and 4, Extended Data Figures 1-3, and Tables 1-5.
-- `plot_RoIs_StripeBench.py` generates Figure 1A
-- `run_evaluation_real_data.py` generates Table 6
-- `plot_RoIs_real_data.py` generates Figure 5
+- `plot_RoIs_StripeBench.py` generates Figure 1A.
+- `run_evaluation_real_data.py` generates Table 6.
+- `plot_RoIs_real_data.py` generates Figure 5.
 - `compare_normalizations_stripepy.py` generates Table 7.
 - `plot_RoIs_real_data_normalizations.py` generates Extended Data Figure 4.
 
