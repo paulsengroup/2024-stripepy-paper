@@ -14,7 +14,7 @@ Input data consists of:
 
 - The StripeBench benchmark, see [doi.org/10.5281/zenodo.14448329](https://doi.org/10.5281/zenodo.14448329)
 - The real contact maps and their ground truth annotations, as detailed in the StripePy manuscript
-- The output of StripePy and other stripe callers over the benchmark and maps mentioned in the previous two points, see [doi.org/10.5281/zenodo.14449731](https://doi.org/10.5281/zenodo.14449731)
+- The output of StripePy and other stripe callers over the benchmark and maps mentioned in the previous two points, see [doi.org/10.5281/zenodo.14449731](https://doi.org/10.5281/zenodo.14449731). To reproduce StripePy's output, you can use any version within the 0.0.x series.
 
 ## Requirements
 
