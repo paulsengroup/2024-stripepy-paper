@@ -9,7 +9,6 @@ import pathlib
 from typing import Dict, List, Tuple, Union
 
 import bioframe as bf
-import h5py
 import hictkpy
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -19,6 +18,7 @@ import seaborn as sns
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import EngFormatter, ScalarFormatter
 from numpy.typing import NDArray
+from stripepy.IO import ResultFile
 
 # Colors
 fruit_punch = sns.blend_palette(["white", "red"], as_cmap=True)
@@ -176,28 +176,24 @@ def retrieve_stripepy(
     """
 
     # Open hdf5 file:
-    hf = h5py.File(str(path / "results.hdf5"), "r")
+    h5 = ResultFile(str(path / "results.hdf5"))
 
     # If the current chromosome is in the HDF5 file...:
-    if chromosome in hf:
+    if chromosome in h5.chromosomes:
 
         # Initialize dictionaries for relevant information:
         HIoIs = {"LT": None, "UT": None}
         VIoIs = {"LT": None, "UT": None}
         seeds = {"LT": None, "UT": None}
-        bio_descriptors = {"LT": None, "UT": None}
-        geo_descriptors = {"LT": None, "UT": None}
-        candidates2keep = {"LT": None, "UT": None}
         clas_vec = {"LT": None, "UT": None}
 
         for w in ["LT", "UT"]:
-            bio_descriptors[w] = np.array(hf[f"{chromosome}/stripes/{w}/bio-descriptors"])
-            geo_descriptors[w] = np.array(hf[f"{chromosome}/stripes/{w}/geo-descriptors"])
+            candidates2keep = h5.get(chromosome, "bio_descriptors", w)["rel_change"] > threshold
+            geo_descriptors = h5.get(chromosome, "geo_descriptors", w)[candidates2keep]
 
-            candidates2keep[w] = np.where(bio_descriptors[w][:, 2] > threshold)[0]
-            HIoIs[w] = geo_descriptors[w][candidates2keep[w], 2:4].astype(int)
-            VIoIs[w] = geo_descriptors[w][candidates2keep[w], 4:6].astype(int)
-            seeds[w] = geo_descriptors[w][candidates2keep[w], 0].astype(int)
+            HIoIs[w] = geo_descriptors[["left_bound", "right_bound"]].to_numpy().astype(int)
+            VIoIs[w] = geo_descriptors[["top_bound", "bottom_bound"]].to_numpy().astype(int)
+            seeds[w] = geo_descriptors["seed"].to_numpy().astype(int)
             clas_vec[w] = np.where(np.isin(range(number_of_bins), seeds[w]), 1, 0)
 
     else:
@@ -1003,7 +999,7 @@ def marginal_plots(
     plt.suptitle("Change in noise level", fontsize=16)
     plt.subplots_adjust(wspace=0.0, hspace=0.0)
     plt.tight_layout()
-    plt.savefig(str(output_path / "medians/bp_by_ns.svg"), bbox_inches="tight")
+    plt.savefig(str(output_path / "medians/medians_by__ns.svg"), bbox_inches="tight")
     plt.clf()
     plt.close(fig)
     print("Done.")
@@ -1032,10 +1028,15 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
         print(f"Chromosight: {np.median(results.loc[results['Method'] == 'chromosight'][m]):.4f}")
         print(f"StripeCaller: {np.median(results.loc[results['Method'] == 'stripecaller'][m]):.4f}")
         print(f"---Interquantile range for {m} ---")
-        print(f"StripePy: {np.percentile(results.loc[results['Method'] == 'stripepy'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripepy'][m], 25):.4f}")
-        print(f"Chromosight: {np.percentile(results.loc[results['Method'] == 'chromosight'][m], 75) - np.percentile(results.loc[results['Method'] == 'chromosight'][m], 25):.4f}")
-        print(f"StripeCaller: {np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 25):.4f}")
-
+        print(
+            f"StripePy: {np.percentile(results.loc[results['Method'] == 'stripepy'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripepy'][m], 25):.4f}"
+        )
+        print(
+            f"Chromosight: {np.percentile(results.loc[results['Method'] == 'chromosight'][m], 75) - np.percentile(results.loc[results['Method'] == 'chromosight'][m], 25):.4f}"
+        )
+        print(
+            f"StripeCaller: {np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 75) - np.percentile(results.loc[results['Method'] == 'stripecaller'][m], 25):.4f}"
+        )
 
     # GLOBAL BOXPLOTS
     fig, axes = plt.subplots(3, 4, figsize=(6.5, 4.5))

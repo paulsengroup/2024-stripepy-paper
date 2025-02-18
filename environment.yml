@@ -9,10 +9,11 @@ channels:
 dependencies:
   - python=3.12
   - bioframe=0.7
-  - h5py=3.11
-  - hictkpy=0.0.5
+  - h5py>=3,<4
+  - hictkpy=1.1.0
   - matplotlib=3.8
   - numpy=1.26
   - pandas=2.2
   - scikit-learn=1.5
   - seaborn=0.13
+  - stripepy-hic=0.0.2

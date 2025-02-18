@@ -11,6 +11,7 @@ import pathlib
 
 import hictkpy
 import pandas as pd
+
 from utils import IO, evaluate
 
 ## PARAMETERS
@@ -178,7 +179,7 @@ if __name__ == "__main__":
 
         for cur_chr in c_names:
             # Number of bins in the current chromosome:
-            bins = c.bins()[:]
+            bins = c.bins().to_df()
             n_bins = len(bins[bins["chrom"] == cur_chr])
 
             # Ground truth:
