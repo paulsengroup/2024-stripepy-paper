@@ -1599,3 +1599,62 @@ def StripeBench_LaTex_tables(results, resolutions, contact_densities, noises):
                 this_row += "\\\\"
                 print(this_row)
             print("\\hline")
+
+
+def StripeBench_LaTex_table_counts(results, resolutions, contact_densities, noises):
+    """
+    Print the classification and recognition measures for the whole benchmark in the form of a LaTex-friendly table.
+    :param results: pandas dataframe containing all measures
+    :param resolutions: resolutions in the benchmark
+    :param contact_densities: contact densities in the benchmark
+    :param noises: noise levels in the benchmark
+    :return: -
+    """
+
+    import numpy as np
+
+    print("Table with number of predicted stripes:")
+    min_number_stripes = {key: np.inf for key in ["stripepy", "chromosight", "stripecaller", "stripenn"]}
+    max_number_stripes = {key: 0 for key in ["stripepy", "chromosight", "stripecaller", "stripenn"]}
+
+    # Loop over resolutions:
+    for resolution in resolutions:
+        n_res = -1
+
+        # Loop over contact densities:
+        for contact in contact_densities:
+            n_res += 1
+
+            if n_res == 0:
+                this_row = "\\multirow{4}{*}{" f"{round(resolution / 1000)}kb" "} & "
+            else:
+                this_row = " & "
+            this_row += f"{round(contact)}"
+
+            # Loop over levels of noise:
+            for noise in noises:
+
+                # Slice the dataframe:
+                sliced_results = results[
+                    (results["Resolution"] == resolution)
+                    & (results["Noise"] == noise)
+                    & (results["Contact Density"] == contact)
+                ]
+
+                for m in ["stripepy", "chromosight", "stripecaller", "stripenn"]:
+                    num_stripes = np.sum(
+                        sliced_results[sliced_results["Method"] == m]["classification_vector"].values[0]
+                    )
+                    min_number_stripes[m] = min(min_number_stripes[m], num_stripes)
+                    max_number_stripes[m] = max(max_number_stripes[m], num_stripes)
+                    this_row += " & {:,}".format(num_stripes)
+            this_row += "\\\\"
+
+            print(this_row)
+        print("\\hline")
+    print("----End of table----")
+
+    print("\n\nMin-max number of predicted stripes:")
+    for m in ["stripepy", "chromosight", "stripecaller", "stripenn"]:
+        print("Min-max for {}: {:,}-{:,}".format(m, min_number_stripes[m], max_number_stripes[m]))
+    print("--------")

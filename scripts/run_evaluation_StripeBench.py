@@ -274,3 +274,8 @@ if __name__ == "__main__":
     print("----SUPPLEMENTARY TABLES AT DIFFERENT RESOLUTIONS----")
     IO.StripeBench_LaTex_tables(results, resolutions, contact_densities, noises)
     print("-------------------")
+
+    print("\n\n-------------------")
+    print("----COUNT TABLE AT DIFFERENT RESOLUTIONS----")
+    IO.StripeBench_LaTex_table_counts(results, resolutions, contact_densities, noises)
+    print("-------------------")
