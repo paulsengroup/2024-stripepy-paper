@@ -1658,3 +1658,82 @@ def StripeBench_LaTex_table_counts(results, resolutions, contact_densities, nois
     for m in ["stripepy", "chromosight", "stripecaller", "stripenn"]:
         print("Min-max for {}: {:,}-{:,}".format(m, min_number_stripes[m], max_number_stripes[m]))
     print("--------")
+
+
+def real_data_LaTex_tables_normalizations(metrics):
+
+    # Line starts:
+    line1 = "\\multicolumn{1}{|c|}{TPR}"
+    line2 = "\\multicolumn{1}{|c|}{TNR}"
+    line3 = "\\multicolumn{1}{|c|}{PPV}"
+    line4 = "\\multicolumn{1}{|c|}{bACC}"
+    line5 = "\\multicolumn{1}{|c|}{GM}"
+    line6 = "\\multicolumn{1}{|c|}{F1c}"
+    line7 = "\\multicolumn{1}{|c|}{FMc}"
+    line8 = "\\multicolumn{1}{|c|}{JI}"
+    line9 = "\\multicolumn{1}{|c|}{AHR}"
+    line10 = "\\multicolumn{1}{|c|}{FGC}"
+    line11 = "\\multicolumn{1}{|c|}{F1r}"
+    line12 = "\\multicolumn{1}{|c|}{FMr}"
+
+    # Contact maps:
+    cmap_names = list(metrics.keys())
+    for cmap_name in cmap_names:
+
+        # \multicolumn{1}{|c|}{TPR}
+
+        for M in ["NONE", "GW_ICE"]:
+            line1 += f" & {metrics[cmap_name][M]['TPR'] * 100:>6.2f} "
+            line2 += f" & {metrics[cmap_name][M]['TNR'] * 100:>6.2f} "
+            line3 += f" & {metrics[cmap_name][M]['PPV'] * 100:>6.2f} "
+            line4 += f" & {metrics[cmap_name][M]['bACC'] * 100:>6.2f} "
+            line5 += f" & {metrics[cmap_name][M]['GM'] * 100:>6.2f} "
+            line6 += f" & {metrics[cmap_name][M]['F1c'] * 100:>6.2f} "
+            line7 += f" & {metrics[cmap_name][M]['FMc'] * 100:>6.2f} "
+            line8 += f" & {metrics[cmap_name][M]['JI'] * 100:>6.2f} "
+            line9 += f" & {metrics[cmap_name][M]['AHR'] * 100:>6.2f} "
+            line10 += f" & {metrics[cmap_name][M]['FGC'] * 100:>6.2f} "
+            line11 += f" & {metrics[cmap_name][M]['F1r'] * 100:>6.2f} "
+            line12 += f" & {metrics[cmap_name][M]['FMr'] * 100:>6.2f} "
+        line1 += f" & {metrics[cmap_name]['GW_SCALE']['TPR'] * 100:>6.2f}"
+        line2 += f" & {metrics[cmap_name]['GW_SCALE']['TNR'] * 100:>6.2f}"
+        line3 += f" & {metrics[cmap_name]['GW_SCALE']['PPV'] * 100:>6.2f}"
+        line4 += f" & {metrics[cmap_name]['GW_SCALE']['bACC'] * 100:>6.2f}"
+        line5 += f" & {metrics[cmap_name]['GW_SCALE']['GM'] * 100:>6.2f}"
+        line6 += f" & {metrics[cmap_name]['GW_SCALE']['F1c'] * 100:>6.2f}"
+        line7 += f" & {metrics[cmap_name]['GW_SCALE']['FMc'] * 100:>6.2f}"
+        line8 += f" & {metrics[cmap_name]['GW_SCALE']['JI'] * 100:>6.2f}"
+        line9 += f" & {metrics[cmap_name]['GW_SCALE']['AHR'] * 100:>6.2f}"
+        line10 += f" & {metrics[cmap_name]['GW_SCALE']['FGC'] * 100:>6.2f}"
+        line11 += f" & {metrics[cmap_name]['GW_SCALE']['F1r'] * 100:>6.2f}"
+        line12 += f" & {metrics[cmap_name]['GW_SCALE']['FMr'] * 100:>6.2f}"
+
+    line1 += f" & \\\\"
+    line2 += f" & \\\\"
+    line3 += f" & \\\\"
+    line4 += f" & \\\\"
+    line5 += f" & \\\\"
+    line6 += f" & \\\\"
+    line7 += f" & \\\\"
+    line8 += f" & \\\\[0.1ex]"
+    line9 += f" & \\\\"
+    line10 += f" & \\\\"
+    line11 += f" & \\\\[0.1ex]"
+    line12 += f" & \\\\"
+
+    print("LaTex-friendly table:")
+    print(line1)
+    print(line2)
+    print(line3)
+    print(line4)
+    print(line5)
+    print(line6)
+    print(line7)
+    print(line8)
+    print("\\cdashline{3-7}")
+    print("\\rule{0pt}{0.80\\normalbaselineskip}")
+    print(line9)
+    print(line10)
+    print(line11)
+    print(line12)
+    print("\\cdashline{3-7}")

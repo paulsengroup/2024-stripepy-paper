@@ -11,6 +11,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
+
 from utils import IO, evaluate
 
 # Resolution
@@ -120,7 +121,7 @@ if __name__ == "__main__":
 
     for cm_name in configs.keys():
 
-        print(f"---Contact map: {cm_name}---")
+        print(f"\n---Contact map: {cm_name}---")
 
         # Contact map loading:
         c, _, _, _ = IO.cmap_loading(str(configs[cm_name]["contact-map"]), resolution)
@@ -241,4 +242,18 @@ if __name__ == "__main__":
         evaluate.compute_classification_measures(confusion_matrices, metrics[cm_name])
         evaluate.compute_recognition_measures(is_anchor_found, is_candidate_good, metrics[cm_name])
 
+    # Save table to CSV:
     IO.csv_normalization_tables(metrics, n_found_anchors, n_predicted_stripes, output_path / "table7.csv")
+
+    print(f"\nTABLE CONTAINING CLASSIFICATION AND RECOGNITION MEASURES...")
+    print("Columns: measure - NONE - GW_ICE - GW_SCALE")
+    IO.real_data_LaTex_tables_normalizations(metrics)
+
+    cmap_names = list(metrics.keys())
+    nAFs = "nAF"
+    nSPs = "nSP"
+    for cmap_name in cmap_names:
+        nAFs += f" & {n_found_anchors[cmap_name]['NONE']} & {n_found_anchors[cmap_name]['GW_ICE']} & {n_found_anchors[cmap_name]['GW_SCALE']}"
+        nSPs += f" & {n_predicted_stripes[cmap_name]['NONE']} & {n_predicted_stripes[cmap_name]['GW_ICE']} & {n_predicted_stripes[cmap_name]['GW_SCALE']}"
+    print(nAFs)
+    print(nSPs)
