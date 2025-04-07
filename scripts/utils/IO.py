@@ -8,7 +8,6 @@ import os
 import pathlib
 from typing import Dict, List, Tuple, Union
 
-import bioframe as bf
 import hictkpy
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -18,7 +17,7 @@ import seaborn as sns
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import EngFormatter, ScalarFormatter
 from numpy.typing import NDArray
-from stripepy.IO import ResultFile
+from stripepy.data_structures import ResultFile
 
 # Colors
 fruit_punch = sns.blend_palette(["white", "red"], as_cmap=True)
@@ -65,6 +64,12 @@ def cmap_loading(path: os.PathLike, resolution: int):
     chr_starts.pop(-1)
 
     return f, chr_starts, chr_ends, chr_sizes
+
+
+def import_bed6(path, chromosome):
+    cols = ["chrom", "start", "end", "name", "score", "strand"]
+    df = pd.read_table(path, names=cols, usecols=list(range(len(cols))))
+    return df[df["chrom"] == chromosome]
 
 
 def chromosomes_to_study(chromosomes, length_in_bp, min_size_allowed):
@@ -125,8 +130,7 @@ def retrieve_ground_truth(
     """
 
     # Ground truth for the chromosome under study:
-    df = bf.read_table(path / f"{file_name}", schema="bed6")
-    df_sub = bf.select(df, chromosome).copy()
+    df_sub = import_bed6(path / f"{file_name}", chromosome)
     df_sub["anchor"] = (df_sub["end"] + df_sub["start"]) / 2
 
     # Lower ground truth stripes:
@@ -292,8 +296,7 @@ def retrieve_stripecaller(
     """
 
     # Load predictions:
-    df = bf.read_table(str(path / "output.bedpe"), schema="bed6")
-    df_chr = df[df["chrom"] == chromosome]
+    df_chr = import_bed6(path / "output.bedpe", chromosome)
     X1 = df_chr["start"].values.tolist()
     X2 = df_chr["end"].values.tolist()
     Y1 = df_chr["score"].values.tolist()
