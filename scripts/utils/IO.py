@@ -1558,3 +1558,44 @@ def csv_normalization_tables(metrics, n_found_anchors, n_predicted_stripes, outp
 
     df.to_csv(output_path, index=False)
     print("Done.")
+
+
+def StripeBench_LaTex_tables(results, resolutions, contact_densities, noises):
+    """
+    Print the classification and recognition measures for the whole benchmark in the form of a LaTex-friendly table.
+    :param results: pandas dataframe containing all measures
+    :param resolutions: resolutions in the benchmark
+    :param contact_densities: contact densities in the benchmark
+    :param noises: noise levels in the benchmark
+    :return: -
+    """
+
+    # Loop over resolutions:
+    for resolution in resolutions:
+
+        print(f"Resolution {resolution}")
+
+        # Loop over levels of noise:
+        for noise in noises:
+
+            # Slice the dataframe:
+            sliced_results = results[(results["Resolution"] == resolution) & (results["Noise"] == noise)]
+
+            # Print:
+            for num_meas, m in enumerate(
+                ["TPR", "TNR", "PPV", "bACC", "GM", "JI", "F1c", "FMc", "AHR", "FGC", "F1r", "FMr"]
+            ):
+                if num_meas == 0:
+                    this_row = (
+                        "\\multirow{12}{*}{" f"{round(noise / 1000)}k" "} & " "\\multicolumn{1}{c|}{" "" f"{m}" "}" " "
+                    )
+                else:
+                    this_row = f"& " "\\multicolumn{1}{c|}{" "" f"{m}" "}" " "
+                for contact in contact_densities:
+                    for method in ["stripepy", "chromosight", "stripecaller", "stripenn"]:
+                        this_row += f"& {sliced_results[
+                                              (sliced_results["Method"] == method) &
+                                              (sliced_results["Contact Density"] == contact)][m].values[0] * 100:>5.2f} "
+                this_row += "\\\\"
+                print(this_row)
+            print("\\hline")

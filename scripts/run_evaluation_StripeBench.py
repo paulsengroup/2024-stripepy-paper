@@ -269,3 +269,8 @@ if __name__ == "__main__":
     # HEATMAPS
     print(f"\nHEATMAPS...")
     IO.heatmaps(results, resolutions, contact_densities, noises, output_path)
+
+    print("\n\n-------------------")
+    print("----SUPPLEMENTARY TABLES AT DIFFERENT RESOLUTIONS----")
+    IO.StripeBench_LaTex_tables(results, resolutions, contact_densities, noises)
+    print("-------------------")
