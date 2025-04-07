@@ -11,6 +11,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
+
 from utils import IO, evaluate
 
 # Resolution
@@ -278,7 +279,22 @@ if __name__ == "__main__":
     evaluate.compute_classification_measures(confusion_matrices, metrics)
     evaluate.compute_recognition_measures(is_anchor_found, is_candidate_good, metrics)
 
+    # Save table to CSV:
     path2output = pathlib.Path(f"{output_path}/table6-{configs_input['contact-map'].stem}.csv")
     IO.real_data_csv_measures(
         metrics, n_found_anchors, n_predicted_stripes, wall_clock_times[configs_input["contact-map"].stem], path2output
     )
+
+    print(f"\nTABLE CONTAINING CLASSIFICATION AND RECOGNITION MEASURES...")
+    print("Columns: measure - M1 - M2 - M3 - M4")
+    IO.real_data_LaTex_table(metrics)
+    print(
+        f" & &  nAF & {n_found_anchors['M1']} & {n_found_anchors['M2']} & {n_found_anchors['M3']} & "
+        f"{n_found_anchors['M4']} \\\\"
+    )
+    print(
+        f" & & nSP & {n_predicted_stripes['M1']} & {n_predicted_stripes['M2']} & {n_predicted_stripes['M3']} & "
+        f"{n_predicted_stripes['M4']} \\\\"
+    )
+    print("\\cdashline{3-7}")
+    print("\\rule{0pt}{0.80\\normalbaselineskip}")

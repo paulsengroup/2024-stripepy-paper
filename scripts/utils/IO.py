@@ -1737,3 +1737,62 @@ def real_data_LaTex_tables_normalizations(metrics):
     print(line11)
     print(line12)
     print("\\cdashline{3-7}")
+
+
+def real_data_LaTex_table(metrics):
+
+    # Line starts:
+    line1 = " & TPR"
+    line2 = " & & TNR"
+    line3 = " & & PPV"
+    line4 = " & & bACC"
+    line5 = " & & GM"
+    line6 = " & & F1c"
+    line7 = " & & FMc"
+    line8 = " & & JI"
+    line9 = " & & AHR"
+    line10 = " & & FGC"
+    line11 = " & & F1r"
+    line12 = " & & FMr"
+    for M in ["M1", "M2", "M3"]:
+        line1 += f" & {metrics[M]['TPR'] * 100:>6.2f} "
+        line2 += f" & {metrics[M]['TNR'] * 100:>6.2f} "
+        line3 += f" & {metrics[M]['PPV'] * 100:>6.2f} "
+        line4 += f" & {metrics[M]['bACC'] * 100:>6.2f} "
+        line5 += f" & {metrics[M]['GM'] * 100:>6.2f} "
+        line6 += f" & {metrics[M]['F1c'] * 100:>6.2f} "
+        line7 += f" & {metrics[M]['FMc'] * 100:>6.2f} "
+        line8 += f" & {metrics[M]['JI'] * 100:>6.2f} "
+        line9 += f" & {metrics[M]['AHR'] * 100:>6.2f} "
+        line10 += f" & {metrics[M]['FGC'] * 100:>6.2f} "
+        line11 += f" & {metrics[M]['F1r'] * 100:>6.2f} "
+        line12 += f" & {metrics[M]['FMr'] * 100:>6.2f} "
+    line1 += f" & {metrics['M4']['TPR'] * 100:>6.2f} \\\\"
+    line2 += f" & {metrics['M4']['TNR'] * 100:>6.2f} \\\\"
+    line3 += f" & {metrics['M4']['PPV'] * 100:>6.2f} \\\\"
+    line4 += f" & {metrics['M4']['bACC'] * 100:>6.2f} \\\\"
+    line5 += f" & {metrics['M4']['GM'] * 100:>6.2f} \\\\"
+    line6 += f" & {metrics['M4']['F1c'] * 100:>6.2f} \\\\"
+    line7 += f" & {metrics['M4']['FMc'] * 100:>6.2f} \\\\"
+    line8 += f" & {metrics['M4']['JI'] * 100:>6.2f} \\\\[0.1ex]"
+    line9 += f" & {metrics['M4']['AHR'] * 100:>6.2f} \\\\"
+    line10 += f" & {metrics['M4']['FGC'] * 100:>6.2f} \\\\"
+    line11 += f" & {metrics['M4']['F1r'] * 100:>6.2f} \\\\[0.1ex]"
+    line12 += f" & {metrics['M4']['FMr'] * 100:>6.2f} \\\\"
+
+    print("LaTex-friendly table:")
+    print(line1)
+    print(line2)
+    print(line3)
+    print(line4)
+    print(line5)
+    print(line6)
+    print(line7)
+    print(line8)
+    print("\\cdashline{3-7}")
+    print("\\rule{0pt}{0.80\\normalbaselineskip}")
+    print(line9)
+    print(line10)
+    print(line11)
+    print(line12)
+    print("\\cdashline{3-7}")
