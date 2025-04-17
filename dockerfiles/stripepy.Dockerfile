@@ -10,8 +10,11 @@ RUN apt-get update \
 && apt-get install -q -y --no-install-recommends time \
 && rm -rf /var/lib/apt/lists/*
 
-RUN stripepy call --help
-RUN stripepy --version
+# Populate bytecode cache
+ENV PYTHONDONTWRITEBYTECODE=
+
+RUN stripepy --help \
+&& stripepy call --help \
+&& stripepy --version
 
 WORKDIR /data
-ENV PYTHONDONTWRITEBYTECODE=1
