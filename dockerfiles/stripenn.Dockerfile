@@ -4,7 +4,7 @@
 
 FROM python:3.11 AS base
 
-ARG CONTAINER_VERSION=1.1.65.22
+ARG CONTAINER_VERSION=1.1.65.18
 
 RUN apt-get update \
 && apt-get install -q -y --no-install-recommends libgl1-mesa-glx time \

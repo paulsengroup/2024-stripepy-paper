@@ -23,7 +23,7 @@ jobs:
     uses: paulsengroup/2024-stripepy-paper/.github/workflows/build-dockerfile.yml@main
     with:
       name: stripenn
-      version: 1.1.65.22
+      version: 1.1.65.18
 
     permissions:
       contents: read
