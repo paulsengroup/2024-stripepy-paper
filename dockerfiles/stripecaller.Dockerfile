@@ -21,7 +21,7 @@ RUN python3 -m venv /opt/stripecaller --upgrade-deps \
 # Populate bytecode cache
 ENV PYTHONDONTWRITEBYTECODE=
 ENV MPLCONFIGDIR=/tmp/.matplotlib
-RUN mkdir "$MPLCONFIGDIR"
+RUN mkdir "$MPLCONFIGDIR" && chmod 777 "$MPLCONFIGDIR"
 
 RUN /opt/stripecaller/bin/call-stripes --help
 

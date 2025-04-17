@@ -16,7 +16,7 @@ RUN python3 -m venv /opt/stripenn --upgrade-deps \
 # Populate bytecode cache
 ENV PYTHONDONTWRITEBYTECODE=
 ENV MPLCONFIGDIR=/tmp/.matplotlib
-RUN mkdir "$MPLCONFIGDIR"
+RUN mkdir "$MPLCONFIGDIR" && chmod 777 "$MPLCONFIGDIR"
 
 RUN /opt/stripenn/bin/stripenn compute --help
 RUN /opt/stripenn/bin/python -c 'from importlib.metadata import version; print(version("stripenn"))'
