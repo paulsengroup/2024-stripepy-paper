@@ -42,7 +42,7 @@ fi
 images=(
   stripepy:1.0.0
   chromosight:1.6.3
-  stripenn:1.1.65.22
+  stripenn:1.1.65.18
   stripecaller:0.1.0
 )
 
@@ -71,6 +71,7 @@ for img in "${images[@]}"; do
       /tmp/runme.py \
       "'$dest_matrix'" \
       "'$resolution'" \
+      --suppress-output \
       --tool "'$tool_name'" \|\
     tee "'$outdir/$tool_name.tsv'"
 
