@@ -1,0 +1,30 @@
+# Copyright (c) 2025 Roberto Rossini (roberros@uio.no)
+#
+# SPDX-License-Identifier: MIT
+
+name: Build StripeCaller Dockerfile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-stripecaller-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripecaller.Dockerfile"
+  pull_request:
+    paths:
+      - ".github/workflows/build-stripecaller-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripecaller.Dockerfile"
+
+jobs:
+  build-stripecaller-dockerfile:
+    name: Build StripeCaller Dockerfile
+    uses: paulsengroup/2024-stripepy-paper/.github/workflows/build-dockerfile.yml@main
+    with:
+      name: stripecaller
+      version: 0.1.0
+
+    permissions:
+      contents: read
+      packages: write
