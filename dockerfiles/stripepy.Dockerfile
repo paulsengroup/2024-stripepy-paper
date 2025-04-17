@@ -13,6 +13,7 @@ RUN apt-get update \
 # Populate bytecode cache
 ENV PYTHONDONTWRITEBYTECODE=
 ENV MPLCONFIGDIR=/tmp/.matplotlib
+RUN mkdir "$MPLCONFIGDIR"
 
 RUN stripepy --help \
 && stripepy call --help \
