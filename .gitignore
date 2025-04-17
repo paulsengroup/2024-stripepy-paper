@@ -166,6 +166,8 @@ cython_debug/
 .idea/
 
 # Custom entries
+data/
+benchmarks/
 .DS_Store
 *.log
 *.log*
