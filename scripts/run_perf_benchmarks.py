@@ -246,7 +246,7 @@ def run_chromosight(
                 result[k] = result1[k] + result2[k]
 
         result["max_rss_kb"] = max(result1["max_rss_kb"], result2["max_rss_kb"])
-        result["cpu_pct"] = compute_cpu_pct(result1)
+        result["cpu_pct"] = compute_cpu_pct(result)
 
         return result | {
             "matrix_file": str(matrix_file.name),
@@ -277,6 +277,7 @@ def run_stripenn(
             str(tmpdir / "out"),
             "--maxpixel",
             "0.95,0.96,0.97,0.98,0.99",
+            "-s",
             "--numcores",
             str(nproc),
         ]
