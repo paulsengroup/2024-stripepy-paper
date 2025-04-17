@@ -15,6 +15,7 @@ RUN python3 -m venv /opt/chromosight --upgrade-deps \
 
 # Populate bytecode cache
 ENV PYTHONDONTWRITEBYTECODE=
+ENV MPLCONFIGDIR=/tmp/.matplotlib
 
 RUN /opt/chromosight/bin/chromosight detect --help
 RUN /opt/chromosight/bin/chromosight --version
