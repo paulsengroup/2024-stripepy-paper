@@ -1,0 +1,30 @@
+# Copyright (c) 2025 Roberto Rossini (roberros@uio.no)
+#
+# SPDX-License-Identifier: MIT
+
+name: Build Chromosight Dockerfile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-chromosight-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/chromosight.Dockerfile"
+  pull_request:
+    paths:
+      - ".github/workflows/build-chromosight-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/chromosight.Dockerfile"
+
+jobs:
+  build-chromosight-dockerfile:
+    name: Build Chromosight Dockerfile
+    uses: paulsengroup/2024-stripepy-paper/.github/workflows/build-dockerfile.yml@main
+    with:
+      name: chromosight
+      version: 1.6.3
+
+    permissions:
+      contents: read
+      packages: write
