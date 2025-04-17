@@ -1,0 +1,30 @@
+# Copyright (c) 2025 Roberto Rossini (roberros@uio.no)
+#
+# SPDX-License-Identifier: MIT
+
+name: Build Stripenn Dockerfile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-stripenn-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripenn.Dockerfile"
+  pull_request:
+    paths:
+      - ".github/workflows/build-stripenn-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripenn.Dockerfile"
+
+jobs:
+  build-stripenn-dockerfile:
+    name: Build Stripenn Dockerfile
+    uses: paulsengroup/2024-stripepy-paper/.github/workflows/build-dockerfile.yml@main
+    with:
+      name: stripenn
+      version: 1.1.65.22
+
+    permissions:
+      contents: read
+      packages: write
