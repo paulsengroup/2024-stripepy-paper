@@ -11,7 +11,7 @@ RUN apt-get update \
 && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv /opt/stripenn --upgrade-deps \
-&& /opt/stripenn/bin/pip install "stripenn==$CONTAINER_VERSION" 'numpy<2' --no-cache-dir
+&& /opt/stripenn/bin/pip install "stripenn==$CONTAINER_VERSION" 'numpy<2' 'pandas<2.1' --no-cache-dir
 
 # Populate bytecode cache
 ENV PYTHONDONTWRITEBYTECODE=
