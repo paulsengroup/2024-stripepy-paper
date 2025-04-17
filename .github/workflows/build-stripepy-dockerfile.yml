@@ -1,0 +1,30 @@
+# Copyright (c) 2025 Roberto Rossini (roberros@uio.no)
+#
+# SPDX-License-Identifier: MIT
+
+name: Build StripePy Dockerfile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-stripepy-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripepy.Dockerfile"
+  pull_request:
+    paths:
+      - ".github/workflows/build-stripepy-dockerfile.yml"
+      - ".github/workflows/build-dockerfile.yml"
+      - "dockerfiles/stripepy.Dockerfile"
+
+jobs:
+  build-stripepy-dockerfile:
+    name: Build StripePy Dockerfile
+    uses: paulsengroup/2024-stripepy-paper/.github/workflows/build-dockerfile.yml@main
+    with:
+      name: stripepy
+      version: 1.0.0
+
+    permissions:
+      contents: read
+      packages: write
