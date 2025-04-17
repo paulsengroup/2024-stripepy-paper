@@ -137,6 +137,10 @@ def find_tools(tools: List[str]) -> Dict[str, pathlib.Path]:
     return found_tools
 
 
+def compute_cpu_pct(result: Dict[str, Any]) -> float:
+    return 100 * (result["cpu_time_kernel_sec"] + result["cpu_time_user_sec"]) / result["elapsed_real_time_sec"]
+
+
 def run_tool(args: List[str], tmpdir: pathlib.Path, suppress_output: bool) -> Dict[str, Any]:
     with tempfile.NamedTemporaryFile(mode="w+t", encoding="utf-8", dir=tmpdir) as f:
         metric_file = pathlib.Path(f.name)
@@ -156,7 +160,7 @@ def run_tool(args: List[str], tmpdir: pathlib.Path, suppress_output: bool) -> Di
         f.seek(0)
         res = json.load(f)
 
-    res["cpu_pct"] = 100 * (res["cpu_time_kernel_sec"] + res["cpu_time_user_sec"]) / res["elapsed_real_time_sec"]
+    res["cpu_pct"] = compute_cpu_pct(res)
     return res
 
 
@@ -203,16 +207,47 @@ def run_chromosight(
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = pathlib.Path(tmpdir)
 
-        args = [
+        args_upper = [
             str(chromosight),
             "detect",
             f"{matrix_file}::/resolutions/{resolution}",
-            str(tmpdir / "out.txt"),
+            str(tmpdir / "out1.txt"),
+            "--pattern",
+            "stripes_left",
+            "--min-dist",
+            "20000",
+            "--max-dist",
+            "200000",
             "--threads",
             str(nproc),
         ]
 
-        result = run_tool(args, tmpdir, suppress_output)
+        args_lower = [
+            str(chromosight),
+            "detect",
+            f"{matrix_file}::/resolutions/{resolution}",
+            str(tmpdir / "out2.txt"),
+            "--pattern",
+            "stripes_right",
+            "--min-dist",
+            "20000",
+            "--max-dist",
+            "200000",
+            "--threads",
+            str(nproc),
+        ]
+
+        result1 = run_tool(args_upper, tmpdir, suppress_output)
+        result2 = run_tool(args_lower, tmpdir, suppress_output)
+        result = {}
+
+        for k in result1:
+            if k.endswith("_sec"):
+                result[k] = result1[k] + result2[k]
+
+        result["max_rss_kb"] = max(result1["max_rss_kb"], result2["max_rss_kb"])
+        result["cpu_pct"] = compute_cpu_pct(result1)
+
         return result | {
             "matrix_file": str(matrix_file.name),
             "resolution": resolution,
