@@ -11,7 +11,6 @@ import pathlib
 
 import hictkpy
 import pandas as pd
-
 from utils import IO, evaluate
 
 ## PARAMETERS

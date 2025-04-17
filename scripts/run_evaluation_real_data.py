@@ -11,7 +11,6 @@ import pathlib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix
-
 from utils import IO, evaluate
 
 # Resolution
