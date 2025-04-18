@@ -83,6 +83,12 @@ def summarize(df_time: pd.DataFrame, df_float: pd.DataFrame) -> pd.DataFrame:
             y = std.loc[row, col]
 
             df.loc[row, col] = format_value(x, y)
+
+    df.columns = [col.removesuffix("_sec") for col in df.columns]
+
+    baseline = mean.loc[mean.index.get_level_values("tool") == "StripePy", "elapsed_real_time_sec"].iloc[0]
+    df["perf_improvement"] = [f"{round(x, 2)}x" for x in mean["elapsed_real_time_sec"] / baseline]
+
     return df
 
 
