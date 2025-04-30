@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 import seaborn as sns
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import EngFormatter, ScalarFormatter
@@ -92,6 +93,10 @@ def chromosomes_to_study(chromosomes, length_in_bp, min_size_allowed):
             raise ValueError(f"\nNo chromosome is long enough... decrease the parameter MIN_SIZE_CHROMOSOME")
 
     return c_pairs
+
+
+def get_permutation_method():
+    return stats.PermutationMethod(n_resamples=9999, batch=5000, rng=1)
 
 
 def retrieve_ground_truth(
@@ -647,8 +652,13 @@ def marginal_plots(
         Q2s_by_res[meas] = []
 
     # Looping in resolution:
+    print("\nLooping by resolution")
     fig, axes = plt.subplots(12, 4, figsize=(6, 11))
     for n_res, resolution in enumerate(resolutions):
+
+        all_M1vsM2, all_M1vsM3 = ["M1, M2"], ["M1, M3"]
+        all_M2vsM3 = ["M2, M3"]
+        all_M1vsM2vsM3 = ["M1, M2, M3"]
 
         # Extract rows referring to current resolution:
         sliced_results = results.loc[results["Resolution"] == resolution]
@@ -656,22 +666,57 @@ def marginal_plots(
         # Medians for current resolution:
         Q2s_this_res = dict()
 
-        for n_meas, clas_meas_name in enumerate(
+        for n_meas, meas_name in enumerate(
             ["TPR", "TNR", "PPV", "bACC", "GM", "JI", "F1c", "FMc", "AHR", "FGC", "F1r", "FMr"]
         ):
 
+            M1vsM2 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+
+            all_M1vsM2.append(M1vsM2.pvalue)
+            all_M1vsM3.append(M1vsM3.pvalue)
+            all_M2vsM3.append(M2vsM3.pvalue)
+            all_M1vsM2vsM3.append(M1vsM2vsM3.pvalue)
+
             # Medians for current resolution and current measure:
-            Q2s_this_res[clas_meas_name] = []
+            Q2s_this_res[meas_name] = []
             for method in ["stripepy", "chromosight", "stripecaller"]:
-                Q2s_this_res[clas_meas_name].append(
-                    np.median(sliced_results.loc[sliced_results["Method"] == method][clas_meas_name].values)
+                Q2s_this_res[meas_name].append(
+                    np.median(sliced_results.loc[sliced_results["Method"] == method][meas_name].values)
                 )
-            Q2s_by_res[clas_meas_name].append(Q2s_this_res[clas_meas_name])
+            Q2s_by_res[meas_name].append(Q2s_this_res[meas_name])
 
             # Box Plots
             ax = axes[n_meas, n_res]
             sns.boxplot(
-                y=clas_meas_name,
+                y=meas_name,
                 x="Method",
                 data=sliced_results,
                 ax=ax,
@@ -686,7 +731,7 @@ def marginal_plots(
             ax.yaxis.set_tick_params(labelsize=7)
             ax.axes.get_xaxis().set_visible(False)
             if n_res == 0:
-                ax.set_ylabel(clas_meas_name, fontsize=12)
+                ax.set_ylabel(meas_name, fontsize=12)
             if n_meas == 0:
                 ax.set_title(r"$\rho$" f" = {int(resolution / 1000)}kb", fontsize=12)
                 ax.set_ylim((-0.02, 0.52))
@@ -741,6 +786,10 @@ def marginal_plots(
             ax.yaxis.grid(True, which="major", linestyle="--", linewidth=0.5)
             ax.yaxis.grid(True, which="minor", linestyle="--", linewidth=0.5)
 
+        print(f"Anderson-Darling test for marginal boxplots, resolution = {resolution}")
+        display_table_Anderson_Darling([all_M1vsM2, all_M1vsM3, all_M2vsM3, all_M1vsM2vsM3])
+        print("Done.")
+
     fig.subplots_adjust(wspace=0.0, hspace=0.0)
     plt.tight_layout()
     plt.savefig(str(output_path / "boxplots/bp_by_res.svg"), bbox_inches="tight")
@@ -776,8 +825,13 @@ def marginal_plots(
         Q2s_by_cd[meas] = []
 
     # Looping in contact density:
+    print("\nLooping by contact density")
     fig, axes = plt.subplots(12, 4, figsize=(6, 11))
     for n_cd, cd in enumerate(contact_densities):
+
+        all_M1vsM2, all_M1vsM3 = ["M1, M2"], ["M1, M3"]
+        all_M2vsM3 = ["M2, M3"]
+        all_M1vsM2vsM3 = ["M1, M2, M3"]
 
         # Extract rows referring to current contact density:
         sliced_results = results.loc[results["Contact Density"] == cd]
@@ -785,22 +839,57 @@ def marginal_plots(
         # Medians for current contact density:
         Q2s_this_cd = dict()
 
-        for n_meas, clas_meas_name in enumerate(
+        for n_meas, meas_name in enumerate(
             ["TPR", "TNR", "PPV", "bACC", "GM", "JI", "F1c", "FMc", "AHR", "FGC", "F1r", "FMr"]
         ):
 
+            M1vsM2 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+
+            all_M1vsM2.append(M1vsM2.pvalue)
+            all_M1vsM3.append(M1vsM3.pvalue)
+            all_M2vsM3.append(M2vsM3.pvalue)
+            all_M1vsM2vsM3.append(M1vsM2vsM3.pvalue)
+
             # Medians for current resolution and current measure:
-            Q2s_this_cd[clas_meas_name] = []
+            Q2s_this_cd[meas_name] = []
             for method in ["stripepy", "chromosight", "stripecaller"]:
-                Q2s_this_cd[clas_meas_name].append(
-                    np.median(sliced_results.loc[sliced_results["Method"] == method][clas_meas_name].values)
+                Q2s_this_cd[meas_name].append(
+                    np.median(sliced_results.loc[sliced_results["Method"] == method][meas_name].values)
                 )
-            Q2s_by_cd[clas_meas_name].append(Q2s_this_cd[clas_meas_name])
+            Q2s_by_cd[meas_name].append(Q2s_this_cd[meas_name])
 
             # Box Plots
             ax = axes[n_meas, n_cd]
             sns.boxplot(
-                y=clas_meas_name,
+                y=meas_name,
                 x="Method",
                 data=sliced_results,
                 ax=ax,
@@ -815,7 +904,7 @@ def marginal_plots(
             ax.yaxis.set_tick_params(labelsize=7)
             ax.axes.get_xaxis().set_visible(False)
             if n_cd == 0:
-                ax.set_ylabel(clas_meas_name, fontsize=12)
+                ax.set_ylabel(meas_name, fontsize=12)
             if n_meas == 0:
                 ax.set_title(r"$\delta$" f" = {int(cd)}", fontsize=12)
                 ax.set_ylim((-0.02, 0.50))
@@ -870,6 +959,10 @@ def marginal_plots(
             ax.yaxis.grid(True, which="major", linestyle="--", linewidth=0.5)
             ax.yaxis.grid(True, which="minor", linestyle="--", linewidth=0.5)
 
+        print(f"Anderson-Darling test for marginal boxplots, contact density = {cd}")
+        display_table_Anderson_Darling([all_M1vsM2, all_M1vsM3, all_M2vsM3, all_M1vsM2vsM3])
+        print("Done.")
+
     plt.subplots_adjust(wspace=0.0, hspace=0.0)
     plt.tight_layout()
     plt.savefig(str(output_path / "boxplots/bp_by_cd.svg"), bbox_inches="tight")
@@ -905,9 +998,13 @@ def marginal_plots(
         Q2s_by_ns[meas] = []
 
     # Looping in noise levels:
+    print("\nLooping by noise level")
     fig, axes = plt.subplots(12, 4, figsize=(6, 11))
-
     for n_ns, noise in enumerate(noises):
+
+        all_M1vsM2, all_M1vsM3 = ["M1, M2"], ["M1, M3"]
+        all_M2vsM3 = ["M2, M3"]
+        all_M1vsM2vsM3 = ["M1, M2, M3"]
 
         # Extract rows referring to current noise:
         sliced_results = results.loc[results["Noise"] == noise]
@@ -915,22 +1012,57 @@ def marginal_plots(
         # Medians for current contact density:
         Q2s_this_ns = dict()
 
-        for n_meas, clas_meas_name in enumerate(
+        for n_meas, meas_name in enumerate(
             ["TPR", "TNR", "PPV", "bACC", "GM", "JI", "F1c", "FMc", "AHR", "FGC", "F1r", "FMr"]
         ):
 
+            M1vsM2 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+            M1vsM2vsM3 = stats.anderson_ksamp(
+                [
+                    sliced_results.loc[sliced_results["Method"] == "stripepy"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "chromosight"][meas_name],
+                    sliced_results.loc[sliced_results["Method"] == "stripecaller"][meas_name],
+                ],
+                method=get_permutation_method(),
+            )
+
+            all_M1vsM2.append(M1vsM2.pvalue)
+            all_M1vsM3.append(M1vsM3.pvalue)
+            all_M2vsM3.append(M2vsM3.pvalue)
+            all_M1vsM2vsM3.append(M1vsM2vsM3.pvalue)
+
             # Medians for current resolution and current measure:
-            Q2s_this_ns[clas_meas_name] = []
+            Q2s_this_ns[meas_name] = []
             for method in ["stripepy", "chromosight", "stripecaller"]:
-                Q2s_this_ns[clas_meas_name].append(
-                    np.median(sliced_results.loc[sliced_results["Method"] == method][clas_meas_name].values)
+                Q2s_this_ns[meas_name].append(
+                    np.median(sliced_results.loc[sliced_results["Method"] == method][meas_name].values)
                 )
-            Q2s_by_ns[clas_meas_name].append(Q2s_this_ns[clas_meas_name])
+            Q2s_by_ns[meas_name].append(Q2s_this_ns[meas_name])
 
             # Box Plots
             ax = axes[n_meas, n_ns]
             sns.boxplot(
-                y=clas_meas_name,
+                y=meas_name,
                 x="Method",
                 data=sliced_results,
                 ax=ax,
@@ -945,7 +1077,7 @@ def marginal_plots(
             ax.yaxis.set_tick_params(labelsize=7)
             ax.axes.get_xaxis().set_visible(False)
             if n_ns == 0:
-                ax.set_ylabel(clas_meas_name, fontsize=12)
+                ax.set_ylabel(meas_name, fontsize=12)
             if n_meas == 0:
                 ax.set_title(r"$\sigma$" f" = {int(noise / 1000)}k", fontsize=12)
                 ax.set_ylim((-0.02, 0.500))
@@ -999,6 +1131,10 @@ def marginal_plots(
             ax.yaxis.set_minor_locator(ticker.FixedLocator(minor_ticks))
             ax.yaxis.grid(True, which="major", linestyle="--", linewidth=0.5)
             ax.yaxis.grid(True, which="minor", linestyle="--", linewidth=0.5)
+
+        print(f"Anderson-Darling test for marginal boxplots, noise level = {noise}")
+        display_table_Anderson_Darling([all_M1vsM2, all_M1vsM3, all_M2vsM3, all_M1vsM2vsM3])
+        print("Done.")
 
     plt.tight_layout()
     plt.savefig(str(output_path / "boxplots/bp_by_ns.svg"), bbox_inches="tight")
