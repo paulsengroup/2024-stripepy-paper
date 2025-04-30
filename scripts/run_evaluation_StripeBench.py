@@ -25,7 +25,7 @@ resolutions = [5000, 10000, 25000, 50000]  # resolutions of Hi-C matrices
 contact_densities = [1, 5, 10, 15]  # contact densities (i.e., sequencing depth)
 
 # Relative change threshold for StripePy:
-rel_change_threshold = 5.0
+rel_change_threshold = 4.0
 
 # Output folder
 output_path = pathlib.Path("./output/StripeBench/")
