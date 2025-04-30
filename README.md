@@ -9,14 +9,16 @@ SPDX-License-Identifier: MIT
 This repository contains the source code used for:
 
 - extracting individual resolutions from the .mcool files contained in the StripeBench benchmark and adding a vector of 1.0s as weights (required for some stripe callers);
-- the data analysis for the StripePy manuscript (preprint available soon).
+- the data analysis for the StripePy manuscript (preprint available at [doi.org/10.1101/2024.12.20.629789](https://doi.org/10.1101/2024.12.20.629789)).
+- the analysis of performance.
 
 Input data consists of:
 
-- The StripeBench benchmark, see [doi.org/10.5281/zenodo.14448329](https://doi.org/10.5281/zenodo.14448329)
-- The real contact maps and their ground truth annotations, as detailed in the StripePy manuscript
-- The output of StripePy and other stripe callers over the benchmark and maps mentioned in the previous two points, see [doi.org/10.5281/zenodo.14449731](https://doi.org/10.5281/zenodo.14449731).
-  To reproduce StripePy's output, you can use any version within the 0.0.x series.
+- The StripeBench benchmark, see [doi.org/10.5281/zenodo.14448329](https://doi.org/10.5281/zenodo.14448329);
+- The real contact maps and their ground truth annotations, as detailed in the StripePy manuscript;
+- The output of StripePy and other stripe callers over the benchmark and maps mentioned in the previous two points, see [10.5281/zenodo.15308825](https://doi.org/10.5281/zenodo.15308825);
+  To reproduce StripePy's output, you can use any version within the 1.x.x series;
+- To run the performance benchmarks, the contact map ENCFF993FGR in mcool format should be located inside this repository under `data/ENCFF993FGR.mcool`.
 
 ## Requirements
 
@@ -47,6 +49,8 @@ On UNIX systems, this can be accomplished with:
 mkdir -p output/StripeBench/{RoIs,boxplots,heatmaps,medians,tables} output/real\ data/{RoIs,tables}
 ```
 
+Plase note that to run the `scripts/run_perf_benchmarks.sh` script, Docker is required.
+
 ## Scripts
 
 The following scripts can be found inside the `scripts/` folder:
@@ -58,12 +62,13 @@ The following scripts can be found inside the `scripts/` folder:
   scripts/preprocess_modle_matrix.py StripeBench/data/grch38_h1_rad21_*/*.mcool --resolutions 5000 10000 25000 50000
   ```
 
-- `run_evaluation_StripeBench.py` generates Figures 3B-Q and 4, Extended Data Figures 1-3, and Tables 1-5.
-- `plot_RoIs_StripeBench.py` generates Figure 1A.
-- `run_evaluation_real_data.py` generates Table 6.
-- `plot_RoIs_real_data.py` generates Figure 5.
-- `compare_normalizations_stripepy.py` generates Table 7.
-- `plot_RoIs_real_data_normalizations.py` generates Extended Data Figure 4.
+- `run_evaluation_StripeBench.py` generates Figure 3B-Q, Supplementary Figures 1-4, and Supplementary Tables 1-6.
+- `plot_RoIs_StripeBench.py` generates Figure 3A.
+- `run_evaluation_real_data.py` generates Supplementary Table 7.
+- `plot_RoIs_real_data.py` generates Supplementary Figure 5.
+- `run_perf_benchmarks.sh` generates Supplementary Table 8.
+- `compare_normalizations_stripepy.py` generates Supplementary Table 9.
+- `plot_RoIs_real_data_normalizations.py` generates Supplementary Figure 6.
 
 To check the input requirements for the various script, activate the environment and then run
 
