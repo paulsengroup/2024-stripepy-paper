@@ -592,6 +592,26 @@ def StripeBench_csv_measures(
     print("Done.")
 
 
+def display_table_Anderson_Darling(lists_of_measures, n_digits=1):
+
+    print("methods & TPR & TNR & PPV & bACC & GM & F1C & FMc & JI & AHR & FGC & F1r & FMr \\\\")
+    lines = [f"{x[0]} & " for x in lists_of_measures]
+
+    for idx, list_of_measures in enumerate(lists_of_measures):
+
+        for m in list_of_measures[1:-1]:
+            if m <= 0.05:
+                lines[idx] += "\\textbf{" + f"{m:.{n_digits}e}" + "} & "
+            else:
+                lines[idx] += f"{m:.{n_digits}e} & "
+
+        if m <= 0.05:
+            lines[idx] += "\\textbf{" + f"{list_of_measures[-1]:.{n_digits}e}" + "}  \\\\"
+        else:
+            lines[idx] += f"{list_of_measures[-1]:.{n_digits}e} \\\\"
+        print(lines[idx])
+
+
 def marginal_plots(
     results: pd.DataFrame,
     resolutions: List[int],
