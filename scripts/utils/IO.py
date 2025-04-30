@@ -1181,6 +1181,8 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
     excluded_methods = ["stripenn"]
     results = results[~results["Method"].isin(excluded_methods)]
 
+    all_M1vsM2, all_M1vsM3, all_M2vsM3, all_M1vsM2vsM3 = ["M1, M2"], ["M1, M3"], ["M2, M3"], ["M1, M2, M3"]
+
     for m in ["TPR", "TNR", "PPV", "bACC", "GM", "JI", "F1c", "FMc", "AHR", "FGC", "F1r", "FMr"]:
         print(f"---Median values for {m} ---")
         print(f"StripePy: {np.median(results.loc[results['Method'] == 'stripepy'][m]):.4f}")
@@ -1200,11 +1202,40 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
     # GLOBAL BOXPLOTS
     fig, axes = plt.subplots(3, 4, figsize=(6.5, 4.5))
     axes = axes.flatten()
-    for ax, clas_meas_name in zip(
-        axes, ["TPR", "TNR", "PPV", "bACC", "GM", "F1c", "FMc", "JI", "AHR", "FGC", "F1r", "FMr"]
-    ):
-        sns.boxplot(
-            y=clas_meas_name,
+    for ax, meas_name in zip(axes, ["TPR", "TNR", "PPV", "bACC", "GM", "F1c", "FMc", "JI", "AHR", "FGC", "F1r", "FMr"]):
+
+        M1vsM2 = stats.anderson_ksamp(
+            [
+                results.loc[results["Method"] == "stripepy"][meas_name],
+                results.loc[results["Method"] == "chromosight"][meas_name],
+            ],
+            method=get_permutation_method(),
+        )
+        M1vsM3 = stats.anderson_ksamp(
+            [
+                results.loc[results["Method"] == "stripepy"][meas_name],
+                results.loc[results["Method"] == "stripecaller"][meas_name],
+            ],
+            method=get_permutation_method(),
+        )
+        M2vsM3 = stats.anderson_ksamp(
+            [
+                results.loc[results["Method"] == "chromosight"][meas_name],
+                results.loc[results["Method"] == "stripecaller"][meas_name],
+            ],
+            method=get_permutation_method(),
+        )
+        M1vsM2vsM3 = stats.anderson_ksamp(
+            [
+                results.loc[results["Method"] == "stripepy"][meas_name],
+                results.loc[results["Method"] == "chromosight"][meas_name],
+                results.loc[results["Method"] == "stripecaller"][meas_name],
+            ],
+            method=get_permutation_method(),
+        )
+
+        bp = sns.boxplot(
+            y=meas_name,
             x="Method",
             data=results,
             ax=ax,
@@ -1214,6 +1245,12 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
             width=0.5,
             fliersize=3,
         )
+
+        all_M1vsM2.append(M1vsM2.pvalue)
+        all_M1vsM3.append(M1vsM3.pvalue)
+        all_M2vsM3.append(M2vsM3.pvalue)
+        all_M1vsM2vsM3.append(M1vsM2vsM3.pvalue)
+
         ax.set(xlabel=None, ylabel=None)
         ax.tick_params(labelbottom=False, bottom=False)
         ax.set_yticks([0.05 * i for i in range(21)], minor=True)
@@ -1222,12 +1259,15 @@ def global_boxplots(results: pd.DataFrame, output_path: pathlib.Path):
         ax.yaxis.grid(True, which="minor", linestyle="--", linewidth=0.5)
         ax.yaxis.set_tick_params(labelsize=8)
         ax.axes.get_xaxis().set_visible(False)
-        ax.set_title(clas_meas_name, fontsize=10)
+        ax.set_title(meas_name, fontsize=10)
         ax.set_ylim((-0.05, 1.05))
     plt.tight_layout()
     plt.savefig(str(output_path / "boxplots/bp.svg"), bbox_inches="tight")
     plt.clf()
     plt.close(fig)
+
+    print("\nAnderson-Darling test for global boxplots:")
+    display_table_Anderson_Darling([all_M1vsM2, all_M1vsM3, all_M2vsM3, all_M1vsM2vsM3])
     print("Done.")
 
 
