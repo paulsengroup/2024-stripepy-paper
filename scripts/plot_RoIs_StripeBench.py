@@ -11,6 +11,7 @@ import pathlib
 
 import numpy as np
 import pandas as pd
+
 from utils import IO, evaluate
 
 # Output folder
@@ -214,7 +215,7 @@ if __name__ == "__main__":
         path2M1 = configs_paths["stripepy"] / f"{file_name}" / f"{resolution}" / ""
         path2M2 = configs_paths["chromosight"] / f"{file_name}" / f"{resolution}" / ""
         path2M3 = configs_paths["stripecaller"] / f"{file_name}" / f"{resolution}" / ""
-        M1 = IO.retrieve_stripepy(path2M1, chromosome, number_of_bins, 5.0)
+        M1 = IO.retrieve_stripepy(path2M1, chromosome, number_of_bins, 4.0)
         M2 = IO.retrieve_chromosight(path2M2, chromosome, I.shape[0], resolution)
         M3 = IO.retrieve_stripecaller(path2M3, chromosome, I.shape[0], resolution)
 
