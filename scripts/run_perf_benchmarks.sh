@@ -9,6 +9,14 @@ set -e
 set -u
 set -o pipefail
 
+ARGC=$#
+
+if [ $ARGC -ne 0 ]; then
+  1>&2 echo "This script does not accept any CLI argument!"
+  1>&2 echo "Please run $0"
+  exit 1
+fi
+
 if ! git rev-parse --show-toplevel &> /dev/null; then
   1>&2 echo "This script must be run from within the repository root!"
   exit 1
